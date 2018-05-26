@@ -84,14 +84,13 @@ suite =
                 }
                 """
                     |> run parser
-                    |> expectOk
-                    -- |> extractFields
-                    -- |> Expect.equalLists 
-                    --     [ "Post.id"
-                    --     , "Post.title"
-                    --     , "Post.stars"
-                    --     , "Comment.id"
-                    --     , "Comment.user"
-                    --     , "Comment.post_id"
-                    --     ]
+                    |> extractFields
+                    |> Expect.equalLists
+                        [ "Post.id"
+                        , "Post.title"
+                        , "Post.stars"
+                        , "Comment.id"
+                        , "Comment.user"
+                        , "Comment.post_id"
+                        ]
         ]

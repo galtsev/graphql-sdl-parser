@@ -56,15 +56,9 @@ interfaceTypeParser =
 
 sequence : Parser a -> Parser (List a)
 sequence parser =
-    let
-        step =
-            delayedCommit space <|
-                succeed identity
-                    |= parser
-    in
     succeed (::)
         |= parser
-        |= repeat zeroOrMore step
+        |= repeat zeroOrMore (delayedCommit space parser)
 
 alpha : Char -> Bool
 alpha c = Char.isLower c || Char.isUpper c

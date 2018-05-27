@@ -68,8 +68,7 @@ suite =
                         case defs of
                             Err err -> []
                             Ok defs ->
-                                List.map extractDef defs
-                                    |> List.concat
+                                List.concatMap extractDef defs
                 in
                 """
                 type Post {

@@ -6,11 +6,6 @@ import Test exposing (..)
 import Graphql.Parser exposing (..)
 import Parser exposing (run)
 
-isOk : Result a b -> Bool
-isOk r =
-    case r of
-        Ok _ -> True
-        Err _ -> False
 
 expectOk : Result x a -> Expectation
 expectOk res =

@@ -1,4 +1,4 @@
-module Graphql.Util exposing (alpha, wsp, identChar, sequence, ident, sp, space, liftResult, comment)
+module Graphql.Util exposing (alpha, wsp, identChar, sequence, ident, sp, space, liftResult, comment, isBang)
 
 import Parser
     exposing
@@ -14,6 +14,7 @@ import Parser
         , zeroOrMore
         , source
         , delayedCommit
+        , oneOf
         )
 import Parser.LanguageKit exposing 
     ( whitespace
@@ -43,6 +44,9 @@ identChar c =
 
 
 -- Parsers
+
+isBang : Parser Bool
+isBang = oneOf [Parser.map (\()->True) (symbol "!"), succeed False]
 
 liftResult : Parser (Result x a) -> Parser a
 liftResult =

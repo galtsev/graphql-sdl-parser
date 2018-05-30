@@ -22,26 +22,52 @@ expectType etyp res =
                 else Expect.fail <| "type mismatch" ++ toString typ
         Err err -> Expect.fail <| toString err
 
-suite : Test
-suite = --skip <|
-    describe "parser"
-        [ test "fieldParser int" <|
-            \_ ->
-                run fieldParser "id: Int"
-                    |> expectType IntType
-        , test "fieldParser float" <|
-            \_ ->
-                run fieldParser "weigth :Float"
-                    |> expectType FloatType
-        , test "fieldParser string" <|
-            \_ ->
-                run fieldParser "name : String"
-                    |> expectType StringType
-        , test "fieldParser ID" <|
-            \_ ->
-                run fieldParser "id: ID"
-                    |> expectType IDType
-        , test "recordTypeParser" <|
+checkParseType : String -> Type -> Test
+checkParseType src expectedType =
+    let
+        fn () =
+            run typeParser src
+                |> Expect.equal (Ok expectedType)
+    in
+    test src fn
+
+
+typeParserTest : Test
+typeParserTest =
+    describe "type parser"
+        [ checkParseType "Int" IntType
+        , checkParseType "Int!" <| Required IntType
+        , checkParseType "[Int]" <| ListOf IntType
+        , checkParseType "[String]" <| ListOf StringType
+        , checkParseType "[ID!]" <| ListOf (Required IDType)
+        , checkParseType "[Int!]!" <| Required (ListOf (Required IntType))
+        , checkParseType "[String]!" <| Required (ListOf StringType)
+
+        ]
+
+checkParseField : String -> String -> Type -> Test
+checkParseField src fldName expectedType =
+    let
+        fn () = run fieldParser src 
+            |> Expect.equal (Ok (Field fldName expectedType))
+    in
+    test src fn
+
+fieldParserTest : Test
+fieldParserTest = --skip <|
+    describe "field parser"
+        [ checkParseField "id: Int" "id" IntType
+        , checkParseField "weigth :Float" "weigth" FloatType
+        , checkParseField "name : String" "name" StringType
+        , checkParseField "id: ID" "id" IDType
+        , checkParseField "email: String!" "email" (Required StringType)
+        , checkParseField "parents: [Int]" "parents" (ListOf IntType)
+        ]
+
+recordParserTest : Test
+recordParserTest = --skip <|
+    describe "record parser"
+        [ test "recordTypeParser" <|
             \_ ->
                 """type MyType {id: Int name: String }
                 """

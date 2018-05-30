@@ -18,7 +18,7 @@ import Parser
         , andThen
         , delayedCommit
         )
-import Graphql.Util exposing (sp, space, sequence, ident, liftResult)
+import Graphql.Util exposing (sp, space, sequence, ident, liftResult, isBang)
 
 
 type Type
@@ -114,7 +114,7 @@ parseType name =
 
         "ID" ->
             Ok IDType
-            
+
         "String" ->
             Ok StringType
 
@@ -125,8 +125,27 @@ parseType name =
             Err <| "bad type name:" ++ name
 
 
-typeParser : Parser Type
-typeParser =
+basicTypeParser : Parser Type
+basicTypeParser =
     ident
         |> Parser.map parseType
         |> liftResult
+
+withBang : Parser Type -> Parser Type
+withBang base = Parser.map2 (\typ bang -> if bang then Required typ else typ) base isBang
+
+listTypeParser : Parser Type
+listTypeParser =
+    succeed ListOf
+        |. symbol "["
+        |. sp
+        |= withBang basicTypeParser
+        |. sp
+        |. symbol "]"
+
+typeParser : Parser Type
+typeParser =
+    withBang <| oneOf
+        [ listTypeParser
+        , basicTypeParser
+        ]

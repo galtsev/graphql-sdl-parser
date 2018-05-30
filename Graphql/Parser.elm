@@ -23,6 +23,7 @@ import Graphql.Util exposing (sp, space, sequence, ident, liftResult)
 
 type Type
     = IntType
+    | IDType
     | StringType
     | FloatType
     | Required Type
@@ -108,15 +109,18 @@ fieldParser =
 parseType : String -> Result String Type
 parseType name =
     case name of
-        "int" ->
+        "Int" ->
             Ok IntType
 
-        "string" ->
+        "ID" ->
+            Ok IDType
+            
+        "String" ->
             Ok StringType
 
-        "float" ->
+        "Float" ->
             Ok FloatType
-
+        
         _ ->
             Err <| "bad type name:" ++ name
 

@@ -16,8 +16,9 @@ identifiers =
         , parseFail "parens fail" ident "[bazz]"
         ]
 
+
 whitespace : Test
-whitespace =
+whitespace = --skip <|
     describe "whitespace tests"
         [ wspAndMark "is optional" "hi"
         , wspAndMark "single space" " hi"
@@ -27,6 +28,7 @@ whitespace =
         , wspAndMark "empty comment" "#\nhi"
         , wspAndMark "non-empty comment" "#hello here\nhi"
         , wspAndMark "multi-line comment" "#hello\n#here\nhi"
+        , wspAndMark "commets interleave with spaces" " #hi\n #here\n#more\n  hi"
         , wspAndMark "mix spaces eol and comment" " #hello\n\n hi"
         ]
 

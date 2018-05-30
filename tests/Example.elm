@@ -23,31 +23,35 @@ expectType etyp res =
         Err err -> Expect.fail <| toString err
 
 suite : Test
-suite =
+suite = --skip <|
     describe "parser"
         [ test "fieldParser int" <|
             \_ ->
-                run fieldParser "id: int"
+                run fieldParser "id: Int"
                     |> expectType IntType
         , test "fieldParser float" <|
             \_ ->
-                run fieldParser "weigth :float"
+                run fieldParser "weigth :Float"
                     |> expectType FloatType
         , test "fieldParser string" <|
             \_ ->
-                run fieldParser "name : string"
+                run fieldParser "name : String"
                     |> expectType StringType
+        , test "fieldParser ID" <|
+            \_ ->
+                run fieldParser "id: ID"
+                    |> expectType IDType
         , test "recordTypeParser" <|
             \_ ->
-                """type MyType {id: int name: string }
+                """type MyType {id: Int name: String }
                 """
                     |> run recordTypeParser
                     |> expectOk
         , test "recordTypeParser multiline" <|
             \_ ->
                 """type MyType {
-                    id: int
-                    name: string
+                    id: Int
+                    name: String
                 }
                 """
                     |> run recordTypeParser
@@ -67,14 +71,14 @@ suite =
                 in
                 """
                 type Post {
-                    id: int
-                    title: string
-                    stars: int
+                    id: Int
+                    title: String
+                    stars: Int
                 }
                 type Comment {
-                    id: int
-                    user: string
-                    post_id: int
+                    id: ID
+                    user: String
+                    post_id: Int
                 }
                 """
                     |> run parser
@@ -87,4 +91,17 @@ suite =
                         , "Comment.user"
                         , "Comment.post_id"
                         ]
+        , test "document with comments" <|
+            \_ ->
+                """
+                # document header
+                type Post{
+                    # field comment
+                    id: ID
+                    # field comment 2
+                    name: String #inline comment
+                }
+                """
+                    |> run parser
+                    |> expectOk
         ]

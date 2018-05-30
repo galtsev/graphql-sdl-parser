@@ -15,6 +15,11 @@ import Parser
         , source
         , delayedCommit
         )
+import Parser.LanguageKit exposing 
+    ( whitespace
+    , LineComment(LineComment)
+    , MultiComment(NoMultiComment)
+    )
 import Char
 
 
@@ -70,9 +75,15 @@ comment =
 
 sp : Parser ()
 sp =
-    ignore zeroOrMore wsp
-        |. repeat zeroOrMore comment
-        |. ignore zeroOrMore wsp
+    whitespace
+        { allowTabs = False
+        , lineComment = LineComment "#"
+        , multiComment = NoMultiComment
+
+        }
+    -- ignore zeroOrMore wsp
+    --     |. repeat zeroOrMore comment
+    --     |. ignore zeroOrMore wsp
 
 
 space : Parser ()
